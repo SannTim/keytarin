@@ -1,3 +1,4 @@
+// text_generator.cpp
 #include "text_generator.h"
 #include <cstddef>
 #include <fstream>

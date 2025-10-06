@@ -1,3 +1,4 @@
+// ui_manager.h
 #pragma once
 #include <ncursesw/ncurses.h>
 #include <string>

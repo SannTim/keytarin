@@ -1,5 +1,7 @@
+// ui_manager.cpp
 #include "ui_manager.h"
 #include <locale.h>
+#include <ncursesw/ncurses.h>
 #include <wchar.h>
 #include "stats_manager.h"
 
@@ -33,15 +35,15 @@ void UIManager::initColors() {
 }
 
 void UIManager::drawBorder() {
-    wattron(main_win, COLOR_PAIR(5));
+    wattron(main_win, COLOR_BLACK);
     box(main_win, 0, 0);
     mvwprintw(main_win, 0, 2, " Typing Trainer ");
-    wattroff(main_win, COLOR_PAIR(5));
+    wattroff(main_win, COLOR_BLACK);
 }
 
 void UIManager::printStats(int wpm, float accuracy, int timeElapsed, wchar_t targetChar) {
     wattron(main_win, COLOR_PAIR(3) | A_BOLD);
-    mvwprintw(main_win, 1, 2, "WPM: %d | Accuracy: %.1f%% | Time: %ds | Target: %c | Press 's' for stats, ESC to exit", 
+    mvwprintw(main_win, 1, 2, "WPM: %d | Accuracy: %.1f%% | Time: %ds | Target: %c , ESC to exit", 
              wpm, accuracy, timeElapsed, targetChar);
     wattroff(main_win, COLOR_PAIR(3) | A_BOLD);
 }

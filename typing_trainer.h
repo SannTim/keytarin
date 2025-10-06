@@ -1,3 +1,4 @@
+// typing_trainer.h
 #pragma once
 #include "ui_manager.h"
 #include "text_generator.h"

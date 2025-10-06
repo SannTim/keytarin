@@ -1,3 +1,4 @@
+// text_generator.h
 #pragma once
 #include <cstddef>
 #include <vector>

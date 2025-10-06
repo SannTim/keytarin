@@ -1,3 +1,4 @@
+// stats_manager.h
 #pragma once
 
 #include <string>

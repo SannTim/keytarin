@@ -1,3 +1,4 @@
+// typing_trainer.cpp
 #include "typing_trainer.h"
 #include <thread>
 
@@ -10,7 +11,7 @@ void TypingTrainer::run() {
     
     int ch;
     while((ch = getch()) != 27) { // ESC для выхода
-        if (ch == 's' || ch == 'S') {
+        if (ch == '`') {
             showStatsScreen();
             continue;
         }
