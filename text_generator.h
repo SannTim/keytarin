@@ -9,7 +9,7 @@ class TextGenerator {
 public:
     TextGenerator(const std::string& dictionaryPath = "dictionary.txt");
     std::vector<std::wstring> generateWords(int count, wchar_t requiredChar = 0);
-    std::wstring getPracticeText(wchar_t requiredChar = 0);
+    std::wstring getPracticeText(wchar_t requiredChar = 0, int count = 20);
     void loadDictionary(const std::string& path);
     
 private:

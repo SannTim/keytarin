@@ -46,7 +46,7 @@ void TypingTrainer::startNewSession() {
     // Получаем букву с наихудшей статистикой
 	errorchars = 0;
     currentRequiredChar = statsManager.getWorstChar();
-    practiceText = textGen.getPracticeText(currentRequiredChar);
+    practiceText = textGen.getPracticeText(currentRequiredChar, 20);
     userInput.clear();
     currentPosition = 0;
     startTime = std::chrono::steady_clock::now();

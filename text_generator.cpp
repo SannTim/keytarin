@@ -80,8 +80,8 @@ std::vector<std::wstring> TextGenerator::generateWords(int count, wchar_t requir
     return result;
 }
 
-std::wstring TextGenerator::getPracticeText(wchar_t requiredChar) {
-    auto words = generateWords(15, requiredChar);
+std::wstring TextGenerator::getPracticeText(wchar_t requiredChar, int count) {
+    auto words = generateWords(count, requiredChar);
     std::wstring result;
     for (const auto& word : words) {
         result += word + L" ";

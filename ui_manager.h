@@ -11,7 +11,7 @@ class UIManager {
 public:
     UIManager();
     ~UIManager();
-    
+    int getTextRow() const { return LINES / 2; }
     void initColors();
     void printStats(int wpm, float accuracy, int timeElapsed, wchar_t targetChar, bool strictMode);
     void printText(const std::wstring& text, const std::wstring& userInput, size_t currentPos);

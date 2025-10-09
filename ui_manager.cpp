@@ -49,39 +49,44 @@ void UIManager::printStats(int wpm, float accuracy, int timeElapsed, wchar_t tar
 }
 
 void UIManager::printText(const std::wstring& text, const std::wstring& userInput, size_t currentPos) {
-    // Очищаем только область текста
-    for (int i = 3; i < LINES - 1; i++) {
-        wmove(main_win, i, 1);
-        wclrtoeol(main_win);
+    // Очищаем область текста (одна строка)
+	const int textRow = LINES / 2;
+    wmove(main_win, textRow, 1);
+    wclrtoeol(main_win);
+
+    const int visibleWidth = COLS - 4; // Учитываем рамку: 2 слева, 2 справа
+    if (visibleWidth <= 0) return;
+
+    // Определяем, с какого индекса начинать отображение
+    int scrollOffset = 0;
+
+    if (static_cast<int>(text.length()) <= visibleWidth) {
+        // Весь текст помещается — показываем с начала
+        scrollOffset = 0;
+    } else {
+        // Центрируем currentPos
+        int desiredCenter = visibleWidth / 2;
+        scrollOffset = static_cast<int>(currentPos) - desiredCenter;
+
+        // Ограничиваем смещение, чтобы не выйти за границы текста
+        scrollOffset = std::max(0, scrollOffset);
+        scrollOffset = std::min(scrollOffset, static_cast<int>(text.length()) - visibleWidth);
     }
-    
-    int row = 3;
-    int col = 2;
-    int max_width = COLS - 4;
-    int current_col = col;
-    int current_row = row;
-    
-    for(size_t i = 0; i < text.length(); ++i) {
-        if(current_col >= max_width) {
-            current_row++;
-            current_col = 2;
-        }
-        
-        if(current_row >= LINES - 2) {
-            break;
-        }
-        
-        wmove(main_win, current_row, current_col);
-        
-        // Определяем цвет символа
+
+    // Отображаем только видимую часть
+    int col = 2; // начальная колонка после рамки
+    for (int i = 0; i < visibleWidth && (scrollOffset + i) < static_cast<int>(text.length()); ++i) {
+        size_t idx = scrollOffset + i;
+        wchar_t ch = text[idx];
+
         int color_pair = 0;
         int attributes = A_NORMAL;
-        
-        if(i == currentPos) {
+
+        if (idx == currentPos) {
             color_pair = 4;
             attributes = A_BOLD | A_REVERSE;
-        } else if(i < userInput.length()) {
-            if(text[i] == userInput[i]) {
+        } else if (idx < userInput.length()) {
+            if (text[idx] == userInput[idx]) {
                 color_pair = 1;
                 attributes = A_BOLD;
             } else {
@@ -89,18 +94,21 @@ void UIManager::printText(const std::wstring& text, const std::wstring& userInpu
                 attributes = A_BOLD;
             }
         }
-        
+
+        wmove(main_win, textRow, col);
         if (color_pair > 0) {
             wattron(main_win, COLOR_PAIR(color_pair) | attributes);
         }
-        
-        waddch(main_win, text[i]);
-        
+        waddch(main_win, ch);
         if (color_pair > 0) {
             wattroff(main_win, COLOR_PAIR(color_pair) | attributes);
         }
-        
-        current_col++;
+        col++;
+    }
+
+    // Очищаем остаток строки справа (на случай, если текст стал короче)
+    while (col < COLS - 1) {
+        mvwaddch(main_win, textRow, col++, ' ');
     }
 }
 
