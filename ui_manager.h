@@ -13,7 +13,7 @@ public:
     ~UIManager();
     
     void initColors();
-    void printStats(int wpm, float accuracy, int timeElapsed, wchar_t targetChar);
+    void printStats(int wpm, float accuracy, int timeElapsed, wchar_t targetChar, bool strictMode);
     void printText(const std::wstring& text, const std::wstring& userInput, size_t currentPos);
     void printResult(int wpm, float accuracy);
     void refreshScreen();

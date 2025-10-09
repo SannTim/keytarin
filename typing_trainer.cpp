@@ -8,6 +8,7 @@ TypingTrainer::TypingTrainer()
 
 void TypingTrainer::run() {
     startNewSession();
+	errorchars = 0;
     
     int ch;
     while((ch = getch()) != 27) { // ESC для выхода
@@ -15,7 +16,10 @@ void TypingTrainer::run() {
             showStatsScreen();
             continue;
         }
-        
+        if (ch == '=') {
+			strictMode = !strictMode;
+			continue;
+		}
         handleInput(ch);
         
         int wpm;
@@ -24,12 +28,12 @@ void TypingTrainer::run() {
         calculateStats(wpm, accuracy, elapsed);
         
         ui.clearScreen();
-        ui.printStats(wpm, accuracy, elapsed, currentRequiredChar);
+        ui.printStats(wpm, accuracy, elapsed, currentRequiredChar, strictMode);
         ui.printText(practiceText, userInput, currentPosition);
         ui.refreshScreen();
         
         if(isTrainingComplete()) {
-            updateStatistics();
+            // updateStatistics();
             ui.printResult(wpm, accuracy);
             startNewSession();
         }
@@ -40,6 +44,7 @@ void TypingTrainer::run() {
 
 void TypingTrainer::startNewSession() {
     // Получаем букву с наихудшей статистикой
+	errorchars = 0;
     currentRequiredChar = statsManager.getWorstChar();
     practiceText = textGen.getPracticeText(currentRequiredChar);
     userInput.clear();
@@ -47,12 +52,12 @@ void TypingTrainer::startNewSession() {
     startTime = std::chrono::steady_clock::now();
 }
 
-void TypingTrainer::updateStatistics() {
-    for (size_t i = 0; i < userInput.length() && i < practiceText.length(); i++) {
-        bool correct = (userInput[i] == practiceText[i]);
-        statsManager.updateStats(practiceText[i], correct);
-    }
-}
+// void TypingTrainer::updateStatistics() {
+//     for (size_t i = 0; i < userInput.length() && i < practiceText.length(); i++) {
+//         bool correct = (userInput[i] == practiceText[i]);
+//         statsManager.updateStats(practiceText[i], correct);
+//     }
+// }
 
 void TypingTrainer::showStatsScreen() {
     auto allStats = statsManager.getAllStats();
@@ -60,17 +65,24 @@ void TypingTrainer::showStatsScreen() {
 }
 
 void TypingTrainer::calculateStats(int& wpm, float& accuracy, int& elapsedTime) {
+
     auto now = std::chrono::steady_clock::now();
     elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count();
     
-    size_t correctChars = 0;
-    for(size_t i = 0; i < userInput.length() && i < practiceText.length(); ++i) {
-        if(userInput[i] == practiceText[i]) correctChars++;
-    }
-    accuracy = (userInput.empty() ? 0 : (correctChars * 100.0 / userInput.length()));
-    
+	if (!strictMode){
+		size_t correctChars = 0;
+    	for(size_t i = 0; i < userInput.length() && i < practiceText.length(); ++i) {
+    	    if(userInput[i] == practiceText[i]) correctChars++;
+    	}
+    	accuracy = (userInput.empty() ? 0 : ((correctChars-errorchars) * 100.0 / userInput.length()));
+	}
+	else {
+
+		accuracy = ((userInput.empty() || errorchars == 0) ? 100 : (100 - (errorchars * 100 / userInput.length())));
+	}
     size_t words = userInput.length() / 5;
     wpm = (elapsedTime > 0) ? static_cast<int>((words * 60) / elapsedTime) : 0;
+	
 }
 
 void TypingTrainer::handleInput(int ch) {
@@ -81,12 +93,21 @@ void TypingTrainer::handleInput(int ch) {
         }
     } else if(ch >= 32 && ch <= 126) {
         if (currentPosition < practiceText.length()) {
-            if (currentPosition == userInput.length()) {
-                userInput += static_cast<wchar_t>(ch);
-            } else {
-                userInput[currentPosition] = static_cast<wchar_t>(ch);
+			wchar_t inputChar = static_cast<wchar_t>(ch);
+            wchar_t expectedChar = practiceText[currentPosition];
+			
+            bool correct = (inputChar == expectedChar);
+            statsManager.updateStats(expectedChar, correct);
+			if (!correct) errorchars++;
+            if (correct || !strictMode) {
+                // Добавляем символ и двигаем курсор
+                if (currentPosition == userInput.length()) {
+                    userInput += inputChar;
+                } else {
+                    userInput[currentPosition] = inputChar;
+                }
+                currentPosition++;
             }
-            currentPosition++;
         }
     } else if(ch == KEY_LEFT) {
         if(currentPosition > 0) currentPosition--;

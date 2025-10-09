@@ -18,12 +18,13 @@ private:
     std::wstring userInput;
     std::chrono::time_point<std::chrono::steady_clock> startTime;
     size_t currentPosition;
+	size_t errorchars;
     wchar_t currentRequiredChar;
-    
+    bool strictMode = true;
     void calculateStats(int& wpm, float& accuracy, int& elapsedTime);
     void handleInput(int ch);
     bool isTrainingComplete();
-    void updateStatistics();
+	//   void updateStatistics();
     void startNewSession();
     void showStatsScreen();
 };

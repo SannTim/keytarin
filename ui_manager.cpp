@@ -41,10 +41,10 @@ void UIManager::drawBorder() {
     wattroff(main_win, COLOR_BLACK);
 }
 
-void UIManager::printStats(int wpm, float accuracy, int timeElapsed, wchar_t targetChar) {
+void UIManager::printStats(int wpm, float accuracy, int timeElapsed, wchar_t targetChar, bool strictMode) {
     wattron(main_win, COLOR_PAIR(3) | A_BOLD);
-    mvwprintw(main_win, 1, 2, "WPM: %d | Accuracy: %.1f%% | Time: %ds | Target: %c , ESC to exit", 
-             wpm, accuracy, timeElapsed, targetChar);
+    mvwprintw(main_win, 1, 2, "WPM: %d | Accuracy: %.1f%% | Time: %ds | Target: %c |Mode: %s , ESC to exit", 
+             wpm, accuracy, timeElapsed, targetChar, strictMode ? "STRICT" : "NORMAL");
     wattroff(main_win, COLOR_PAIR(3) | A_BOLD);
 }
 
